@@ -4,6 +4,7 @@ import datetime
 import credential_manager as cm
 
 
+# TODO: Fix logic to account for 24 reply limit
 def send_reminder(phone_number):
     header = {
         "Authorization": f"Bearer {cm.get_whatsapp_key()}"
