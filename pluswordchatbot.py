@@ -22,13 +22,15 @@ class Bot:
         img_id (str): image id of the attached image in the received message
         msg_text (str): text contained in the received message
     """
+
     def __init__(self, json_in):
         """
         Constructor for Bot class.
 
-        Attributes:
+        Arguments:
             json_in: incoming json received from webhook containing message data
         """
+
         value = json_in.get("entry")[0].get("changes")[0].get("value")
         self.client = pymongo.MongoClient(cm.get_db_connection_string())
 
@@ -43,9 +45,10 @@ class Bot:
     def send_text(self, text: str):
         """
         Sends a text to the user from which the initial message was received.
-        Attributes:
-            text: text message body to be sent
+        Arguments:
+            text (str): text message body to be sent
         """
+
         print(f"Sending text to {self.number}: {text}")
 
         header = {
@@ -70,6 +73,7 @@ class Bot:
         """
         Saves the image data from graph api to be read by pytesseract and stored in db.
         """
+
         header = {
             "Authorization": f"Bearer {cm.get_whatsapp_key()}"
         }
@@ -117,6 +121,7 @@ class Bot:
         """
         Saves a manual time submission into the db.
         """
+
         db = self.get_db_collection("PlusWord", "Times")
 
         today_date = datetime.date.today()
@@ -148,6 +153,7 @@ class Bot:
         """
         Replaces a preexisting time in the db with data entered by the user.
         """
+
         db = self.get_db_collection("PlusWord", "Times")
 
         today_date = datetime.date.today()
@@ -185,6 +191,7 @@ class Bot:
         NOTE: Currently non-functional, WhatsApp only allow replies within 24 hours of contact from user.
         Working on a new solution based on reminding 24 hours from previous submission.
         """
+
         option = re.search(r"^!reminder ([A-z]+)", self.msg_text)
 
         if not option:
@@ -268,6 +275,7 @@ class Bot:
         """
         Submits a retroactive PlusWord time. For use when the user doesn't submit on the day of the puzzle.
         """
+
         # format
         # !retro 15-08-2023:13:15 01:45
         db = self.get_db_collection("PlusWord", "Times")
@@ -321,10 +329,11 @@ class Bot:
     def get_db_collection(self, database: str, collection: str):
         """
         Gets a collection object using pymongo.
-        Attributes:
+        Arguments:
             database (str): name of the database on the MongoDB server to access
             collection (str): name of the collection within the database to access
         """
+
         db = self.client[database]
         collection = db[collection]
         return collection
@@ -333,6 +342,7 @@ class Bot:
         """
         Sends a random message to the user. Called as part of any submission received message as a little easter egg.
         """
+
         if random.randint(0, 99) != 99:
             return
 
@@ -361,6 +371,7 @@ def home():
     """
     Default and only access point to the API, handles creation of bot for each instance of webhook data.
     """
+
     try:
         if request.method == "GET":
             if request.args.get('hub.verify_token') == "vtoken":
