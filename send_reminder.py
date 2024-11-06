@@ -17,7 +17,7 @@ def send_reminder(phone_number):
         "Authorization": f"Bearer {cm.get_whatsapp_key()}"
     }
 
-    url = f"https://graph.facebook.com/v15.0/{cm.get_whatsapp_page_id()}/messages"
+    url = f"https://graph.facebook.com/v21.0/{cm.get_whatsapp_page_id()}/messages"
 
     body = {
         "messaging_product": "whatsapp",

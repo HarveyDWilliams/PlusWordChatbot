@@ -55,7 +55,7 @@ class Bot:
             "Authorization": f"Bearer {cm.get_whatsapp_key()}"
         }
 
-        url = f"https://graph.facebook.com/v15.0/{cm.get_whatsapp_page_id()}/messages"
+        url = f"https://graph.facebook.com/v21.0/{cm.get_whatsapp_page_id()}/messages"
 
         body = {
             "messaging_product": "whatsapp",
@@ -77,9 +77,11 @@ class Bot:
         header = {
             "Authorization": f"Bearer {cm.get_whatsapp_key()}"
         }
-
-        response = requests.get(url=f"https://graph.facebook.com/v15.0/{self.img_id}", headers=header)
-
+        
+        print("Getting whatsapp reponse")
+        response = requests.get(url=f"https://graph.facebook.com/v21.0/{self.img_id}", headers=header)
+        print("Got whatsapp response", response.content)
+        
         img_url = response.json().get("url")
 
         image = requests.get(url=img_url, headers=header).content
@@ -94,6 +96,7 @@ class Bot:
         today_date = datetime.date.today()
         today_start = datetime.datetime(today_date.year, today_date.month, today_date.day)
 
+        print("Checking db")
         if db.find_one({"phone_number": self.number, "load_ts": {'$gte': today_start}}):
             self.send_text(f"You have already submitted a time for today. Use !edit to change your time.")
             return
@@ -108,6 +111,7 @@ class Bot:
                 "time": time,
                 "load_ts": datetime.datetime.now()
             }
+            print("Inserting time", time)
             db.insert_one(data)
 
             self.send_text(f"Saved time {time}.")
