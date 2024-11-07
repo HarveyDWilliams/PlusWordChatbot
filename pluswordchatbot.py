@@ -7,6 +7,7 @@ import re
 import datetime
 import requests
 import credential_manager as cm
+from PIL import Image
 
 
 class Bot:
@@ -88,6 +89,11 @@ class Bot:
 
         with open('submission.jpg', 'wb') as handler:
             handler.write(image)
+
+        image = Image.open("submission.jpg")
+        upscaled_image = image.resize((image.width * 2, image.height * 2), resample=Image.BOX)
+        upscaled_image.save("submission.jpg")
+
         img = cv2.imread('submission.jpg')
         text = pytesseract.image_to_string(img)
 
