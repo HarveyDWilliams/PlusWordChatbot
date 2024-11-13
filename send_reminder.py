@@ -3,6 +3,7 @@ import pymongo
 import datetime
 import credential_manager as cm
 import sys
+import logging
 
 
 def send_reminder(phone_number):
@@ -30,6 +31,7 @@ def send_reminder(phone_number):
         }
     }
     requests.post(url=url, json=body, headers=header)
+    logging.info(f"Sent reminder to {phone_number}.")
 
 
 def check_if_valid_reminder(phone_number: str):
@@ -69,9 +71,13 @@ def check_if_valid_reminder(phone_number: str):
 
 def main():
     _, phone_number = sys.argv
+    logging.info(f"Beginning sending reminder to {phone_number}.")
     if check_if_valid_reminder(phone_number):
         send_reminder(phone_number)
+        return
+    logging.info(f"Invalid reminder request for {phone_number}.")
 
 
 if __name__ == "__main__":
+    logging.basicConfig("reminder_log.log")
     main()
