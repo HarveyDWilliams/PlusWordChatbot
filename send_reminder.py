@@ -53,10 +53,10 @@ def check_if_valid_reminder(phone_number: str):
     client = pymongo.MongoClient(cm.get_db_connection_string())
 
     reminders = client["PlusWord"]["Reminders"]
-    player_reminder = reminders.find_one({"enabled": True, "phone_number": phone_number})
+    player_reminder = reminders.find_one({"$and": [{"enabled": True}, {"phone_number": phone_number}]})
 
     submitted = client["PlusWord"]["Times"]
-    player_submission = submitted.find_one({"load_ts": {'$gte': today_start}, "phone_number": phone_number})
+    player_submission = submitted.find_one({"$and": [{"load_ts": {'$gte': today_start}}, {"phone_number": phone_number}]})
 
     if player_submission:
         return False
