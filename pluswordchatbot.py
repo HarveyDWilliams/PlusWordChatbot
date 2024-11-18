@@ -373,10 +373,10 @@ class Bot:
 
         self.send_text(random.choice(messages))
 
-    def motivate_me(self):
-        option = re.search(r"^!reminder ([A-z]+)", self.msg_text)
+    def motivation(self):
+        option = re.search(r"^!motivation ([A-z]+)", self.msg_text)
         if not option:
-            self.send_text("Please specify an option from enable or disable. Format: !motivateme option.")
+            self.send_text("Please specify an option from enable or disable. Format: !motivation option.")
 
         option = option.group(1).lower()
 
@@ -505,8 +505,8 @@ def home():
                 bot.reminder()
             if re.search("^!retro", bot.msg_text):
                 bot.retro()
-            if re.search("^!motivateme", bot.msg_text):
-                bot.motivate_me()
+            if re.search("^!motivation", bot.msg_text):
+                bot.motivation()
         return ""
     except Exception as ex:
         with open("log.txt", "a") as log:
