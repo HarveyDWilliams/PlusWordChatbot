@@ -406,7 +406,6 @@ class Bot:
                 'heavenly delight',
                 'incredible hero',
                 'joyful sunshine',
-                'kind heart',
                 'lovely gem',
                 'magical dreamer',
                 'noble guardian',
