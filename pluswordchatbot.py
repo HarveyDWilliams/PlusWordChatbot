@@ -155,6 +155,7 @@ class Bot:
 
             self.send_text(f"Saved time {time}.")
             self.send_random_message()
+            self.send_motivation()
             return
 
         self.send_text("No time found in message. Please use format 00:00 to submit.")
