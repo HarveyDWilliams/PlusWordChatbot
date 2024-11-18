@@ -78,11 +78,11 @@ class Bot:
         header = {
             "Authorization": f"Bearer {cm.get_whatsapp_key()}"
         }
-        
+
         print("Getting whatsapp reponse")
         response = requests.get(url=f"https://graph.facebook.com/v21.0/{self.img_id}", headers=header)
         print("Got whatsapp response", response.content)
-        
+
         img_url = response.json().get("url")
 
         image = requests.get(url=img_url, headers=header).content
@@ -122,6 +122,7 @@ class Bot:
 
             self.send_text(f"Saved time {time}.")
             self.send_random_message()
+            self.send_motivation()
             return
 
         self.send_text("No time found in message. Please use !submit to submit your time.")
@@ -372,6 +373,111 @@ class Bot:
 
         self.send_text(random.choice(messages))
 
+    def motivate_me(self):
+        option = re.search(r"^!reminder ([A-z]+)", self.msg_text)
+        if not option:
+            self.send_text("Please specify an option from enable or disable. Format: !motivateme option.")
+
+        option = option.group(1).lower()
+
+        db = self.get_db_collection("PlusWord", "Motivation")
+
+        if option == "enable":
+            data = {
+                "$set": {"enabled": True, "phone_number": self.number}
+            }
+            db.update_one(
+                {
+                    "phone_number": self.number
+                },
+                data,
+                upsert=True
+            )
+            self.send_text(f"""Motivation enabled for you my {
+            random.choice([
+                'adorable sweetheart',
+                'brilliant genius',
+                'caring angel',
+                'dazzling beauty',
+                'enchanting star',
+                'fabulous wonder',
+                'gentle soul',
+                'heavenly delight',
+                'incredible hero',
+                'joyful sunshine',
+                'kind heart',
+                'lovely gem',
+                'magical dreamer',
+                'noble guardian',
+                'perfect treasure',
+                'radiant light',
+                'stunning muse',
+                'tender friend',
+                'unique miracle',
+                'vibrant spirit',
+                'wonderful charm',
+                'wise sage',
+                'zesty enthusiast',
+                'amazing visionary',
+                'bold explorer',
+                'charming delight',
+                'delightful smile',
+                'elegant princess',
+                'fearless leader',
+                'graceful swan'
+            ])
+            }.""")
+        elif option == "disable":
+            data = {
+                "$set": {"enabled": False, "phone_number": self.number}
+            }
+            db.update_one(
+                {
+                    "phone_number": self.number
+                },
+                data,
+                upsert=True
+            )
+            self.send_text(f"""Motivation disable. I'm always here for you if you need me 🤖.""")
+
+    def send_motivation(self):
+        db = self.get_db_collection("PlusWord", "Motivation")
+
+        if db.find_one({"$and": [{"phone_number": self.number}, {"enabled": True}]}):
+            messages = [
+                "Lightning fast! You crushed it! ⚡",
+                "You're a puzzle-solving wizard! 🧙‍️",
+                "Amazing speed! You nailed it! 🚀",
+                "Incredible! You solved that in no time! ⏱️",
+                "Wow! You're a puzzle master! 🏆",
+                "Outstanding! You didn't even break a sweat! 💪",
+                "Brilliant! You're unbeatable! 🥇",
+                "You're on fire! Keep it up! 🔥",
+                "Phenomenal speed! You're amazing! ⭐",
+                "You're unstoppable! Fantastic job! 🌟",
+                "Mind-blowing speed! Well done! 👏",
+                "You're a genius! That was lightning quick! ⚡",
+                "Exceptional! You're a true puzzle pro! 🧩",
+                "Top-notch performance! You're the best! 🥳",
+                "Unbelievable! You solved it like a champ! 🏅",
+                "Spectacular! You made that look easy! 😎",
+                "Superb! You're a puzzle-solving superstar! 🌠",
+                "Outstanding! You're on a roll! 🎉",
+                "Bravo! That was impressive! 🌟",
+                "Astonishing speed! You're a natural! 🌈",
+                "You did it! You're a puzzle-solving machine! 🤖",
+                "Fantastic work! You make it look effortless! 💫",
+                "Incredible job! You crushed that puzzle! 🧠",
+                "You're a puzzle-solving legend! 🦸‍",
+                "Perfect! You solved it in record time! 🏁",
+                "Amazing! You have lightning reflexes! ⏳",
+                "You're a superstar! That was blazing fast! 🌟",
+                "Outstanding work! You aced it! 📈",
+                "You're brilliant! Keep shining! 🌟",
+                "You did it again! You're unstoppable! 🌠"
+            ]
+            self.send_text(random.choice(messages))
+
 
 app = Flask(__name__)
 
@@ -399,6 +505,8 @@ def home():
                 bot.reminder()
             if re.search("^!retro", bot.msg_text):
                 bot.retro()
+            if re.search("^!motivateme", bot.msg_text):
+                bot.motivate_me()
         return ""
     except Exception as ex:
         with open("log.txt", "a") as log:
