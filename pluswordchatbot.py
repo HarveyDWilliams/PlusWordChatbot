@@ -415,7 +415,6 @@ class Bot:
                 'tender friend',
                 'unique miracle',
                 'vibrant spirit',
-                'wonderful charm',
                 'wise sage',
                 'zesty enthusiast',
                 'amazing visionary',
@@ -438,7 +437,7 @@ class Bot:
                 data,
                 upsert=True
             )
-            self.send_text(f"""Motivation disable. I'm always here for you if you need me 🤖.""")
+            self.send_text(f"""Motivation disabled. I'm always here for you if you need me 🤖.""")
 
     def send_motivation(self):
         db = self.get_db_collection("PlusWord", "Motivation")
