@@ -14,7 +14,7 @@ def schedule_reminder(phone_number: str, time: str):
         time (str): time at which to send the reminder
     """
 
-    run(f'./send_reminder.sh {phone_number} | at {time} ', shell=True)
+    run(f'sh ./send_reminder.sh {phone_number} | at {time} ', shell=True)
 
 
 def set_reminders(reminders):
