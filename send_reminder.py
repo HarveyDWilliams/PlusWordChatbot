@@ -79,5 +79,5 @@ def main():
 
 
 if __name__ == "__main__":
-    logging.basicConfig(filename="reminder_log.log")
+    logging.basicConfig(filename="reminder_log.log", level=logging.INFO)
     main()
