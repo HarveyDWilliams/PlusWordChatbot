@@ -2,6 +2,7 @@ import pymongo
 import credential_manager as cm
 import sys
 import datetime
+import logging
 from subprocess import run
 
 
@@ -14,7 +15,7 @@ def schedule_reminder(phone_number: str, time: str):
         time (str): time at which to send the reminder
     """
 
-    run(f'sh ./send_reminder.sh {phone_number} | at {time} ', shell=True)
+    run(f'/home/ubuntu/pluswordchatbot/send_reminder.sh {phone_number} | at {time} ', shell=True)
 
 
 def set_reminders(reminders):
@@ -42,22 +43,24 @@ def get_reminders() -> [{str: str}]:
     reminders = client["PlusWord"]["Reminders"]
     times = client["PlusWord"]["Times"]
 
+    yesterday_date = datetime.date.today() + datetime.timedelta(days=-1)
     today_date = datetime.date.today()
-    tomorrow_date = datetime.date.today() + datetime.timedelta(days=1)
-    today_start = datetime.datetime(today_date.year, today_date.month, today_date.day)
-    today_end = datetime.datetime(tomorrow_date.year, tomorrow_date.month, tomorrow_date.day)
+    yesterday_start = datetime.datetime(yesterday_date.year, yesterday_date.month, yesterday_date.day)
+    yesterday_end = datetime.datetime(today_date.year, today_date.month, today_date.day)
 
-    yesterday_submissions = times.find({"load_ts": {'$gte': today_start, '$lt': today_end}})
+    yesterday_submissions = times.find({"load_ts": {'$gte': yesterday_start, '$lt': yesterday_end}})
 
     reminder_data = dict()
     for submission in yesterday_submissions:
+        logging.info(f"Checking submission: {submission}")
         reminder_config = reminders.find_one({"phone_number": submission.get("phone_number")})
         if not reminder_config:
+            logging.info("No config found")
             continue
         reminder_time = datetime.datetime.strptime(reminder_config["time"],"%H:%M")
         reminder_delta = datetime.timedelta(hours=reminder_time.hour, minutes=reminder_time.minute)
         time_to_remind = min(submission.get("load_ts") + datetime.timedelta(hours=23, minutes=59),
-                             today_start + reminder_delta
+                             datetime.datetime(today_date.year, today_date.month, today_date.day, 0, 0) + reminder_delta
                              )
         if time_to_remind <= datetime.datetime.now():
             continue
@@ -66,10 +69,12 @@ def get_reminders() -> [{str: str}]:
             "reminder_time": reminder_config["time"]
         }
 
+    logging.info(reminder_data)
     return reminder_data
 
 
 def main():
+    logging.basicConfig(filename="reminder_log.log", level=logging.INFO)
     reminders = get_reminders()
     set_reminders(reminders)
 
