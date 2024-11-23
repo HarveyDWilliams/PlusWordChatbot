@@ -122,7 +122,7 @@ class Bot:
 
             self.send_text(f"Saved time {time}.")
             self.send_random_message()
-            self.send_motivation()
+            self.send_motivation(time)
             return
 
         self.send_text("No time found in message. Please use !submit to submit your time.")
@@ -155,7 +155,7 @@ class Bot:
 
             self.send_text(f"Saved time {time}.")
             self.send_random_message()
-            self.send_motivation()
+            self.send_motivation(time)
             return
 
         self.send_text("No time found in message. Please use format 00:00 to submit.")
@@ -375,9 +375,12 @@ class Bot:
         self.send_text(random.choice(messages))
 
     def motivation(self):
+        """
+        Enables, disables, or sets a motivation message flag in the db for use in the send_motivation function.
+        """
         option = re.search(r"^!motivation ([A-z]+)", self.msg_text)
         if not option:
-            self.send_text("Please specify an option from enable or disable. Format: !motivation option.")
+            self.send_text("Please specify an option from enable, disable, or set. Format: !motivation option.")
 
         option = option.group(1).lower()
 
@@ -438,11 +441,46 @@ class Bot:
                 upsert=True
             )
             self.send_text(f"""Motivation disabled. I'm always here for you if you need me 🤖.""")
+        elif option == "set":
+            time = re.search(r"^!motivation [A-z]+ ((\d+:)?[0-5][0-9]:[0-5][0-9])", self.msg_text)
+            if not time:
+                self.send_text("Please specify a valid time.")
 
-    def send_motivation(self):
+            data = {
+                "$set": {"enabled": False, "phone_number": self.number, "minimum_time": time}
+            }
+
+            db.update_one(
+                {
+                    "phone_number": self.number
+                },
+                data,
+                upsert=True
+            )
+            self.send_text(f"""Motivation minimum set to {time}. I'm sure it won't be there for long! 🦾""")
+
+    def send_motivation(self, time):
+        """
+        Sends a variable motivational message based on the users time and their preset minimum time.
+        """
         db = self.get_db_collection("PlusWord", "Motivation")
 
-        if db.find_one({"$and": [{"phone_number": self.number}, {"enabled": True}]}):
+        if result := db.find_one({"$and": [{"phone_number": self.number}, {"enabled": True}]}):
+            minimum_time = re.match(
+                result.get("minimum_time") if result.get("minimum_time") else "01:00",
+                r"(\d+:)?([0-5][0-9]):([0-5][0-9])"
+            )
+            minimum_time = datetime.timedelta(
+                hours=int(minimum_time.group(1)),
+                minutes=int(minimum_time.group(2)),
+                seconds=int(minimum_time.group(3))
+            )
+            time = re.match(time, r"(\d+:)?([0-5][0-9]):([0-5][0-9])")
+            time = datetime.timedelta(
+                hours=int(time.group(1)),
+                minutes=int(time.group(2)),
+                seconds=int(time.group(3))
+            )
             messages = [
                 "Lightning fast! You crushed it! ⚡",
                 "You're a puzzle-solving wizard! 🧙‍️",
@@ -474,6 +512,37 @@ class Bot:
                 "Outstanding work! You aced it! 📈",
                 "You're brilliant! Keep shining! 🌟",
                 "You did it again! You're unstoppable! 🌠"
+            ] if time < minimum_time else [
+                "Great effort! You'll nail it next time! 🧩",
+                "Almost there! Keep trying, success is within reach! 💪",
+                "Nice try! Every attempt brings you closer! 🌟",
+                "Don't give up, you're doing fantastic! You’ll get it soon! 🚀",
+                "So close! Keep going, you'll crack it next time! ⭐",
+                "Great work! Persistence will pay off soon! 👍",
+                "You're on the right track, success is near! 🌈",
+                "Fantastic effort! You're learning and improving each time! 🏅",
+                "You're doing great! Keep trying, you'll succeed soon! 💪",
+                "Wonderful try! Every attempt is a step towards victory! 🌟",
+                "You're making progress! Keep at it, you’ll get it next time! 🚀",
+                "Almost there! Keep pushing, success is around the corner! 🌟",
+                "You're amazing! Keep going, you’ll succeed soon! 🧠",
+                "Great job! Each try brings you closer to solving it! 🌈",
+                "Nice work! You're closer than you think! Keep at it! 👍",
+                "You're doing fantastic! Success is just a step away! 🏅",
+                "Wonderful effort! Keep pushing, you’ll get there! 🌟",
+                "You're so close! Keep trying, victory is near! 💪",
+                "Excellent attempt! Keep going, you’ll crack it next time! 🚀",
+                "Great effort! Keep at it, you’ll succeed soon! ⭐",
+                "Almost there! Stay determined, success is within reach! 🌈",
+                "Well done! Keep trying, you’re improving every time! 👍",
+                "You're doing great! Keep going, you'll get there soon! 🏅",
+                "Fantastic try! You're on the right path, keep at it! 🌟",
+                "You're amazing! Keep pushing, you’ll succeed next time! 💪",
+                "Wonderful effort! Success is just around the corner! 🚀",
+                "Great job! Each try gets you closer to your goal! ⭐",
+                "You're almost there! Keep trying, victory is near! 🌈",
+                "Nice work! Keep pushing, you’ll get it soon! 👍",
+                "You're doing fantastic! Every attempt brings you closer to success! 🏅"
             ]
             self.send_text(random.choice(messages))
 
