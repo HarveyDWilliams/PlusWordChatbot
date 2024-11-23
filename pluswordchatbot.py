@@ -35,7 +35,6 @@ class Bot:
 
         value = json_in.get("entry")[0].get("changes")[0].get("value")
         self.client = pymongo.MongoClient(cm.get_db_connection_string())
-
         self.type = value.get("messages")[0].get("type")
         self.msg_from = value.get("contacts")[0].get("profile").get("name")
         self.number = value.get("contacts")[0].get("wa_id")
@@ -563,7 +562,8 @@ def home():
                 return request.args.get('hub.challenge')
             return "Authentication failed. Invalid Token."
         if request.method == 'POST':
-            print(request.json)
+            if not request.json.get("entry")[0].get("changes")[0].get("value").get("messages"):
+                return
             bot = Bot(request.json)
             if bot.type == "image":
                 bot.store_time_from_image()
