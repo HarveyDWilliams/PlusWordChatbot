@@ -469,16 +469,15 @@ class Bot:
             print(result)
             print(result.get("minimum_time") if result.get("minimum_time") is not None else "01:00")
             minimum_time = re.match(
+                r"(\d+:)?([0-5][0-9]):([0-5][0-9])",
                 result.get("minimum_time") if result.get("minimum_time") is not None else "01:00",
-                r"(\d+:)?([0-5][0-9]):([0-5][0-9])"
             )
-            print(minimum_time)
             minimum_time = datetime.timedelta(
                 hours=int(minimum_time.group(1)),
                 minutes=int(minimum_time.group(2)),
                 seconds=int(minimum_time.group(3))
             )
-            time = re.match(time, r"(\d+:)?([0-5][0-9]):([0-5][0-9])")
+            time = re.match(r"(\d+:)?([0-5][0-9]):([0-5][0-9])", time)
             time = datetime.timedelta(
                 hours=int(time.group(1)),
                 minutes=int(time.group(2)),
