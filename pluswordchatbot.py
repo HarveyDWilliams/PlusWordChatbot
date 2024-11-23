@@ -467,10 +467,12 @@ class Bot:
 
         if result := db.find_one({"$and": [{"phone_number": self.number}, {"enabled": True}]}):
             print(result)
+            print(result.get("minimum_time") if result.get("minimum_time") is not None else "01:00")
             minimum_time = re.match(
                 result.get("minimum_time") if result.get("minimum_time") is not None else "01:00",
                 r"(\d+:)?([0-5][0-9]):([0-5][0-9])"
             )
+            print(minimum_time)
             minimum_time = datetime.timedelta(
                 hours=int(minimum_time.group(1)),
                 minutes=int(minimum_time.group(2)),
