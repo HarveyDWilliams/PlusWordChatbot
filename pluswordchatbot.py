@@ -1,3 +1,4 @@
+import logging
 import random
 import cv2
 import pytesseract
@@ -555,7 +556,7 @@ def home():
     """
     Default and only access point to the API, handles creation of bot for each instance of webhook data.
     """
-
+    logging.basicConfig(filename="log.txt", level=logging.INFO)
     try:
         if request.method == "GET":
             if request.args.get('hub.verify_token') == "vtoken":
@@ -577,6 +578,6 @@ def home():
                 bot.motivation()
         return ""
     except Exception as ex:
-        with open("log.txt", "a") as log:
-            log.write(f"{datetime.datetime.now()}: {ex.__traceback__.__str__()}\n")
-            return ""
+        print(ex)
+        logging.exception()
+        return ""
