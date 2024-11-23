@@ -563,6 +563,7 @@ def home():
                 return request.args.get('hub.challenge')
             return "Authentication failed. Invalid Token."
         if request.method == 'POST':
+            print(request.json)
             bot = Bot(request.json)
             if bot.type == "image":
                 bot.store_time_from_image()
