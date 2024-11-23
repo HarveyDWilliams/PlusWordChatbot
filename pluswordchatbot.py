@@ -578,5 +578,5 @@ def home():
         return ""
     except Exception as ex:
         with open("log.txt", "a") as log:
-            log.write(f"{datetime.datetime.now()}: {ex.with_traceback()}}\n")
+            log.write(f"{datetime.datetime.now()}: {ex.with_traceback()}\n")
             return ""
