@@ -447,8 +447,10 @@ class Bot:
                 self.send_text("Please specify a valid time.")
                 return
 
+            time = time.group(1)
+
             data = {
-                "$set": {"enabled": False, "phone_number": self.number, "minimum_time": time.group(1)}
+                "$set": {"enabled": False, "phone_number": self.number, "minimum_time": time}
             }
 
             db.update_one(
