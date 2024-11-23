@@ -466,6 +466,7 @@ class Bot:
         db = self.get_db_collection("PlusWord", "Motivation")
 
         if result := db.find_one({"$and": [{"phone_number": self.number}, {"enabled": True}]}):
+            print(result)
             minimum_time = re.match(
                 result.get("minimum_time") if result.get("minimum_time") is not None else "01:00",
                 r"(\d+:)?([0-5][0-9]):([0-5][0-9])"
