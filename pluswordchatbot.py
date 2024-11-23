@@ -448,7 +448,7 @@ class Bot:
                 return
 
             data = {
-                "$set": {"enabled": False, "phone_number": self.number, "minimum_time": time}
+                "$set": {"enabled": False, "phone_number": self.number, "minimum_time": time.group(1)}
             }
 
             db.update_one(
