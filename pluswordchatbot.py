@@ -578,6 +578,5 @@ def home():
                 bot.motivation()
         return ""
     except Exception as ex:
-        print(ex)
-        logging.exception()
+        logging.exception(f"{datetime.datetime.now()}: {ex}")
         return ""
