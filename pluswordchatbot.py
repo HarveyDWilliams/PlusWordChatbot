@@ -465,21 +465,19 @@ class Bot:
         """
         db = self.get_db_collection("PlusWord", "Motivation")
 
-        if result := db.find_one({"$and": [{"phone_number": self.number}, {"enabled": True}]}):
-            print(result)
-            print(result.get("minimum_time") if result.get("minimum_time") is not None else "01:00")
+        if result := db.find_one({"$and": [{"phone_number": self.number}, {"enabled": True}]}):=
             minimum_time = re.match(
                 r"(\d+:)?([0-5][0-9]):([0-5][0-9])",
                 result.get("minimum_time") if result.get("minimum_time") is not None else "01:00",
             )
             minimum_time = datetime.timedelta(
-                hours=int(minimum_time.group(1)),
+                hours=int(minimum_time.group(1)) if minimum_time.group(1) else 0,
                 minutes=int(minimum_time.group(2)),
                 seconds=int(minimum_time.group(3))
             )
             time = re.match(r"(\d+:)?([0-5][0-9]):([0-5][0-9])", time)
             time = datetime.timedelta(
-                hours=int(time.group(1)),
+                hours=int(time.group(1)) if time.group(1) else 0,
                 minutes=int(time.group(2)),
                 seconds=int(time.group(3))
             )
