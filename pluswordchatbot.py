@@ -563,7 +563,7 @@ def home():
             return "Authentication failed. Invalid Token."
         if request.method == 'POST':
             if not request.json.get("entry")[0].get("changes")[0].get("value").get("messages"):
-                return
+                return ""
             bot = Bot(request.json)
             if bot.type == "image":
                 bot.store_time_from_image()
