@@ -445,6 +445,7 @@ class Bot:
             time = re.search(r"^!motivation [A-z]+ ((\d+:)?[0-5][0-9]:[0-5][0-9])", self.msg_text)
             if not time:
                 self.send_text("Please specify a valid time.")
+                return
 
             data = {
                 "$set": {"enabled": False, "phone_number": self.number, "minimum_time": time}
