@@ -47,8 +47,7 @@ def check_if_valid_reminder(phone_number: str):
     """
 
     today_date = datetime.date.today()
-    today_datetime = datetime.datetime.now()
-    today_start = datetime.datetime(today_date.year, today_date.month, today_date.day)
+    today_start = datetime.datetime(today_date.year, today_date.month, today_date.day, 0, 0, 0)
 
     client = pymongo.MongoClient(cm.get_db_connection_string())
 
@@ -56,17 +55,16 @@ def check_if_valid_reminder(phone_number: str):
     player_reminder = reminders.find_one({"$and": [{"enabled": True}, {"phone_number": phone_number}]})
 
     submitted = client["PlusWord"]["Times"]
-    player_submission = submitted.find_one({"$and": [{"load_ts": {'$gte': today_start}}, {"phone_number": phone_number}]})
+    player_submission = submitted.find_one(
+        {"$and": [{"load_ts": {'$gte': today_start}}, {"phone_number": phone_number}]})
 
-    if player_submission:
+    if not player_submission:
         return False
 
     if not player_reminder:
         return False
-    elif player_reminder.get("time") == today_datetime.strftime("%H:%M"):
-        return True
 
-    return False
+    return True
 
 
 def main():
