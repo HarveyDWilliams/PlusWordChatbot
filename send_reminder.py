@@ -58,7 +58,7 @@ def check_if_valid_reminder(phone_number: str):
     player_submission = submitted.find_one(
         {"$and": [{"load_ts": {'$gte': today_start}}, {"phone_number": phone_number}]})
 
-    if not player_submission:
+    if player_submission:
         return False
 
     if not player_reminder:
