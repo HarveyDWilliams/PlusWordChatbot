@@ -15,7 +15,8 @@ def schedule_reminder(phone_number: str, time: str):
         time (str): time at which to send the reminder
     """
 
-    run(f'/home/ubuntu/pluswordchatbot/send_reminder.sh "{phone_number} | at {time}"', shell=True)
+    logging.info(f'/home/ubuntu/pluswordchatbot/send_reminder.sh {phone_number} | at {time}')
+    run(f'/home/ubuntu/pluswordchatbot/send_reminder.sh {phone_number} | at {time}', shell=True)
 
 
 def set_reminders(reminders):
