@@ -23,10 +23,8 @@ def get_reminders() -> [{str: str}]:
 
     reminder_data = dict()
     for submission in yesterday_submissions:
-        logging.info(f"Checking submission: {submission}")
         reminder_config = reminders.find_one({"phone_number": submission.get("phone_number")})
         if not reminder_config:
-            logging.info("No config found")
             continue
         reminder_time = datetime.datetime.strptime(reminder_config["time"],"%H:%M")
         reminder_delta = datetime.timedelta(hours=reminder_time.hour, minutes=reminder_time.minute)
@@ -40,7 +38,6 @@ def get_reminders() -> [{str: str}]:
             "reminder_time": reminder_config["time"]
         }
 
-    logging.info(reminder_data)
     return reminder_data
 
 
