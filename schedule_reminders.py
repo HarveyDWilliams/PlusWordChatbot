@@ -105,6 +105,7 @@ def check_if_valid_reminder(phone_number: str):
 def main():
     logging.basicConfig(filename="reminder_log.log", level=logging.INFO)
     reminders = get_reminders()
+    logging.info(reminders)
     for phone_number, values in reminders.items():
         if check_if_valid_reminder(phone_number) and values.get('enabled'):
             if datetime.datetime.now().strftime('%H:%M') == values.get('reminder_time'):
