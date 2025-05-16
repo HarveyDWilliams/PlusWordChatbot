@@ -16,8 +16,10 @@ def get_reminders() -> [{str: str}]:
 
     yesterday_date = datetime.date.today() + datetime.timedelta(days=-1)
     today_date = datetime.date.today()
+    now = datetime.datetime.now()
     yesterday_start = datetime.datetime(yesterday_date.year, yesterday_date.month, yesterday_date.day)
     yesterday_end = datetime.datetime(today_date.year, today_date.month, today_date.day)
+    now_to_minute = datetime.datetime(now.year, now.month, now.day, now.hour, now.minute)
 
     yesterday_submissions = times.find({"load_ts": {'$gte': yesterday_start, '$lt': yesterday_end}})
 
@@ -31,7 +33,7 @@ def get_reminders() -> [{str: str}]:
         time_to_remind = min(submission.get("load_ts") + datetime.timedelta(hours=23, minutes=59),
                              datetime.datetime(today_date.year, today_date.month, today_date.day, 0, 0) + reminder_delta
                              )
-        if time_to_remind <= datetime.datetime.now():
+        if time_to_remind < now_to_minute:
             continue
         reminder_data[submission.get("phone_number")] = {
             "enabled": reminder_config["enabled"],
