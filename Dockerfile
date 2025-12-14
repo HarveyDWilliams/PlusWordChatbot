@@ -17,4 +17,4 @@ COPY . .
 EXPOSE 3000
 
 # Run with gunicorn (WSGI server)
-CMD ["gunicorn", "--bind", "0.0.0.0:3000", "pluswordchatbot:app"]
+CMD ["gunicorn", "--bind", "127.0.0.1:3000", "pluswordchatbot:app"]
