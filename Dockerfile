@@ -14,8 +14,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Expose the port your app will run on
-EXPOSE 8000
+EXPOSE 3000
 
 # Run with gunicorn (WSGI server)
-# Replace 'pluswordchatbot:app' with your actual module:app name
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "pluswordchatbot:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:3000", "pluswordchatbot:app"]
